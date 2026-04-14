@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduAdvisor HCM Pro - Encyclopedia 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { sans: ['"Plus Jakarta Sans"'] }, colors: { brand: { 50: '#f0f9ff', 500: '#0ea5e9', 600: '#0284c7' } } } }
+        }
+    </script>
+    <style>
+        body { background-color: #f8fafc; color: #0f172a; scroll-behavior: smooth; }
+        .step-section { display: none; opacity: 0; transform: translateY(10px); transition: all 0.4s ease; }
+        .step-active { display: block; opacity: 1; transform: translateY(0); }
+        .bento-card { background: #fff; border: 1px solid #e2e8f0; border-radius: 20px; transition: 0.3s; display: flex; flex-direction: column; }
+        .bento-card:hover { border-color: #0ea5e9; transform: translateY(-3px); box-shadow: 0 10px 30px -10px rgba(0,0,0,0.1); }
+        .major-item { font-size: 11px; padding: 10px; background: #f8fafc; border-radius: 12px; border: 1px solid #f1f5f9; cursor: pointer; transition: 0.2s; font-weight: 600; text-align: center; width: 100%; border: 1px solid transparent; }
+        .major-item:hover { background: #0ea5e9; color: white; border-color: #0ea5e9; transform: scale(1.02); }
+        .score-input { width: 100%; text-align: center; font-size: 1.5rem; font-weight: 800; color: #0284c7; background: #f1f5f9; border-radius: 12px; padding: 10px; outline: none; border: 2px solid transparent; transition: 0.2s; }
+        .score-input:focus { border-color: #0ea5e9; background: #fff; box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.2); }
+        .score-input:disabled { opacity: 0.5; background: #e2e8f0; cursor: not-allowed; }
+        .mbti-btn { border: 2px solid #e2e8f0; background: #fff; transition: 0.2s; cursor: pointer; width: 100%; text-align: left; padding: 12px; border-radius: 12px; font-size: 12px; color: #475569; }
+        .mbti-btn.selected { border-color: #0ea5e9; background: #f0f9ff; color: #0284c7; font-weight: 700; box-shadow: 0 2px 8px rgba(14, 165, 233, 0.15); }
+        .tab-btn.active { background: white; color: #0284c7; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .custom-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        
+        .pt5-label { font-size: 10px; font-weight: 900; color: #94a3b8; text-transform: uppercase; margin-bottom: 4px; display: block; letter-spacing: 0.05em; }
+        .pt5-section-title { font-size: 13px; font-weight: 800; color: #334155; text-transform: uppercase; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+        .pt5-section-title i { color: #0ea5e9; }
+    </style>
+</head>
+<body class="antialiased">
+
+    <nav class="fixed top-0 w-full bg-white/90 backdrop-blur-md z-40 border-b border-slate-200 no-print">
+        <div class="max-w-6xl mx-auto px-6 h-16 flex items-center justify-between">
+            <div class="font-extrabold text-xl flex items-center gap-2 text-slate-800"><i class="fa-solid fa-graduation-cap text-brand-600"></i>EduAdvisor HCM</div>
+            <div class="bg-slate-100 p-1 rounded-xl flex gap-1 shadow-inner">
+                <button onclick="switchView('advice')" id="btn-advice" class="tab-btn active px-5 py-2 rounded-lg text-xs font-bold transition-all">Cố Vấn AI</button>
+                <button onclick="switchView('library')" id="btn-library" class="tab-btn px-5 py-2 rounded-lg text-xs font-bold transition-all text-slate-500">Thư Viện Trường</button>
+            </div>
+        </div>
+    </nav>
+
+    <main id="view-advice" class="max-w-5xl mx-auto px-4 pt-24 pb-20">
+        
+        <!-- STEP 1: PT5 SCORE INPUT -->
+        <div id="step-1" class="step-section step-active text-center">
+            <h1 class="text-3xl font-extrabold text-slate-900 mb-8 uppercase tracking-tighter">Nhập Thông Tin Học Tập</h1>
+            
+            <div class="bento-card p-6 mb-6 text-left border-t-4 border-brand-500 shadow-sm relative overflow-hidden">
+                <div class="flex flex-col md:flex-row gap-6 justify-between">
+                    <div class="flex-1">
+                        <div class="pt5-section-title"><i class="fa-solid fa-user-check"></i> Chọn trường hợp của thí sinh</div>
+                        <div class="flex gap-6 mt-4">
+                            <label class="flex items-center gap-2 cursor-pointer font-bold text-sm text-slate-700 hover:text-brand-600 transition-colors">
+                                <input type="radio" name="hasDGNL" value="yes" checked onchange="toggleDGNL(true)" class="w-4 h-4 text-brand-600 focus:ring-brand-500"> 
+                                Có thi ĐGNL
+                            </label>
+                            <label class="flex items-center gap-2 cursor-pointer font-bold text-sm text-slate-700 hover:text-brand-600 transition-colors">
+                                <input type="radio" name="hasDGNL" value="no" onchange="toggleDGNL(false)" class="w-4 h-4 text-brand-600 focus:ring-brand-500"> 
+                                Không thi ĐGNL
+                            </label>
+                        </div>
+                    </div>
+                    <!-- Tính năng chọn Khối (Tổ Hợp) Môn -->
+                    <div class="flex-1 border-t md:border-t-0 md:border-l border-slate-200 pt-4 md:pt-0 md:pl-6">
+                        <div class="pt5-section-title"><i class="fa-solid fa-shapes"></i> Chọn tổ hợp môn xét tuyển chuẩn</div>
+                        <select id="subject-combo" onchange="updateSubjects()" class="w-full bg-slate-50 border border-slate-200 p-3 rounded-xl font-bold text-slate-800 outline-none focus:border-brand-500 focus:bg-white transition-all shadow-sm">
+                            <!-- JS tự nạp từ DB ALL_COMBOS -->
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                <!-- Học bạ -->
+                <div class="bento-card p-6 text-left shadow-sm">
+                    <div class="pt5-section-title"><i class="fa-solid fa-book-open"></i> Nhập điểm học bạ 3 năm</div>
+                    
+                    <div class="grid grid-cols-3 gap-3 mb-4">
+                        <div><label class="pt5-label"><span class="lbl-t">Toán</span> 10</label><input type="number" id="hb-t10" step="0.1" class="score-input p-2 text-lg" oninput="calcScores()" placeholder="-"></div>
+                        <div><label class="pt5-label"><span class="lbl-m1">Vật lý</span> 10</label><input type="number" id="hb-m1-10" step="0.1" class="score-input p-2 text-lg" oninput="calcScores()" placeholder="-"></div>
+                        <div><label class="pt5-label"><span class="lbl-m2">Hóa học</span> 10</label><input type="number" id="hb-m2-10" step="0.1" class="score-input p-2 text-lg" oninput="calcScores()" placeholder="-"></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3 mb-4">
+                        <div><label class="pt5-label"><span class="lbl-t">Toán</span> 11</label><input type="number" id="hb-t11" step="0.1" class="score-input p-2 text-lg" oninput="calcScores()" placeholder="-"></div>
+                        <div><label class="pt5-label"><span class="lbl-m1">Vật lý</span> 11</label><input type="number" id="hb-m1-11" step="0.1" class="score-input p-2 text-lg" oninput="calcScores()" placeholder="-"></div>
+                        <div><label class="pt5-label"><span class="lbl-m2">Hóa học</span> 11</label><input type="number" id="hb-m2-11" step="0.1" class="score-input p-2 text-lg" oninput="calcScores()" placeholder="-"></div>
+                    </div>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div><label class="pt5-label"><span class="lbl-t">Toán</span> 12</label><input type="number" id="hb-t12" step="0.1" class="score-input p-2 text-lg" oninput="calcScores()" placeholder="-"></div>
+                        <div><label class="pt5-label"><span class="lbl-m1">Vật lý</span> 12</label><input type="number" id="hb-m1-12" step="0.1" class="score-input p-2 text-lg" oninput="calcScores()" placeholder="-"></div>
+                        <div><label class="pt5-label"><span class="lbl-m2">Hóa học</span> 12</label><input type="number" id="hb-m2-12" step="0.1" class="score-input p-2 text-lg" oninput="calcScores()" placeholder="-"></div>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-6">
+                    <!-- THPT -->
+                    <div class="bento-card p-6 text-left shadow-sm flex-1">
+                        <div class="pt5-section-title"><i class="fa-solid fa-pen-clip"></i> Nhập điểm thi THPT Môn Tổ Hợp</div>
+                        <div class="grid grid-cols-3 gap-3 mb-3">
+                            <div><label class="pt5-label"><span class="lbl-t">Toán</span></label><input type="number" id="thpt-t" step="0.1" class="score-input p-2 text-lg" oninput="calcScores()" placeholder="-"></div>
+                            <div><label class="pt5-label"><span class="lbl-m1">Vật lý</span></label><input type="number" id="thpt-m1" step="0.1" class="score-input p-2 text-lg" oninput="calcScores()" placeholder="-"></div>
+                            <div><label class="pt5-label"><span class="lbl-m2">Hóa học</span></label><input type="number" id="thpt-m2" step="0.1" class="score-input p-2 text-lg" oninput="calcScores()" placeholder="-"></div>
+                        </div>
+                        <p class="text-[10px] text-slate-400 font-semibold bg-slate-50 p-2 rounded-lg inline-block">Hệ thống sẽ lấy điểm gốc để cấu thành các Thang điểm khác nhau.</p>
+                    </div>
+
+                    <!-- ĐGNL -->
+                    <div id="dgnl-section" class="bento-card p-6 text-left shadow-sm transition-all duration-300 flex-1">
+                        <div class="pt5-section-title"><i class="fa-solid fa-brain"></i> Nhập điểm thi ĐGNL</div>
+                        <div class="grid grid-cols-3 gap-3 mb-3">
+                            <div><label class="pt5-label">Ngôn ngữ</label><input type="number" id="dgnl-nn" class="score-input p-2 text-lg" oninput="calcScores()" placeholder="-"></div>
+                            <div><label class="pt5-label">Toán học</label><input type="number" id="dgnl-th" class="score-input p-2 text-lg" oninput="calcScores()" placeholder="-"></div>
+                            <div><label class="pt5-label">Tư duy KH</label><input type="number" id="dgnl-td" class="score-input p-2 text-lg" oninput="calcScores()" placeholder="-"></div>
+                        </div>
+                        <p class="text-[10px] text-slate-400 font-semibold bg-slate-50 p-2 rounded-lg inline-block">Điểm tổng (Toán + NN + Khoa Học). Tối đa 1200.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Khu vực & Ưu tiên -->
+            <div class="bento-card p-6 mb-8 text-left shadow-sm">
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div>
+                        <div class="pt5-section-title"><i class="fa-solid fa-map-location-dot"></i> Khu vực</div>
+                        <div class="flex flex-wrap gap-4">
+                            <label class="flex items-center gap-1 cursor-pointer text-xs font-bold text-slate-600"><input type="radio" name="kv" value="1" onchange="calcScores()" class="accent-brand-600"> KV1</label>
+                            <label class="flex items-center gap-1 cursor-pointer text-xs font-bold text-slate-600"><input type="radio" name="kv" value="2nt" onchange="calcScores()" class="accent-brand-600"> KV2-NT</label>
+                            <label class="flex items-center gap-1 cursor-pointer text-xs font-bold text-slate-600"><input type="radio" name="kv" value="2" onchange="calcScores()" class="accent-brand-600"> KV2</label>
+                            <label class="flex items-center gap-1 cursor-pointer text-xs font-bold text-slate-600"><input type="radio" name="kv" value="3" checked onchange="calcScores()" class="accent-brand-600"> KV3</label>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="pt5-section-title"><i class="fa-solid fa-star"></i> Đối tượng ưu tiên</div>
+                        <div class="flex flex-wrap gap-4">
+                            <label class="flex items-center gap-1 cursor-pointer text-xs font-bold text-slate-600"><input type="radio" name="ut" value="1" onchange="calcScores()" class="accent-brand-600"> ƯT 1 (Nhóm 1-4)</label>
+                            <label class="flex items-center gap-1 cursor-pointer text-xs font-bold text-slate-600"><input type="radio" name="ut" value="2" onchange="calcScores()" class="accent-brand-600"> ƯT 2 (Nhóm 5-7)</label>
+                            <label class="flex items-center gap-1 cursor-pointer text-xs font-bold text-slate-600"><input type="radio" name="ut" value="0" checked onchange="calcScores()" class="accent-brand-600"> Không ưu tiên</label>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="pt5-section-title"><i class="fa-solid fa-award"></i> Ưu tiên Thành tích (PT5)</div>
+                        <input type="number" id="achieve" class="score-input p-2 text-lg max-w-[200px]" oninput="calcScores()" placeholder="Tối đa 10 điểm" max="10">
+                    </div>
+                </div>
+            </div>
+
+            <!-- DASHBOARD ĐA PHƯƠNG THỨC XÉT TUYỂN MỚI -->
+            <div class="mb-10">
+                <h3 class="font-black text-slate-800 mb-5 text-sm uppercase tracking-[0.2em] relative z-10 opacity-70 flex items-center justify-center gap-2"><i class="fa-solid fa-chart-pie text-brand-500"></i> Bảng Phân Tích Đa Phương Thức Xét Tuyển</h3>
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <!-- Học Bạ -->
+                    <div class="bg-gradient-to-br from-emerald-50 to-emerald-100 p-6 rounded-3xl border border-emerald-200 shadow-sm relative overflow-hidden transform hover:-translate-y-1 transition-all">
+                        <div class="text-[10px] font-black text-emerald-400 uppercase tracking-widest mb-1">Xét Học Bạ</div>
+                        <div id="score-hb" class="text-3xl lg:text-4xl font-black text-emerald-700 tracking-tighter">0.0</div>
+                        <div class="text-[10px] text-emerald-500 mt-2 font-bold uppercase">Thang: 30 Điểm</div>
+                        <i class="fa-solid fa-book-open absolute -bottom-4 -right-4 text-7xl text-emerald-200/50"></i>
+                    </div>
+                    <!-- THPT -->
+                    <div class="bg-gradient-to-br from-indigo-50 to-indigo-100 p-6 rounded-3xl border border-indigo-200 shadow-sm relative overflow-hidden transform hover:-translate-y-1 transition-all">
+                        <div class="text-[10px] font-black text-indigo-400 uppercase tracking-widest mb-1">Xét Điểm THPT</div>
+                        <div id="score-thpt" class="text-3xl lg:text-4xl font-black text-indigo-700 tracking-tighter">0.0</div>
+                        <div class="text-[10px] text-indigo-500 mt-2 font-bold uppercase">Thang: 30 Điểm</div>
+                        <i class="fa-solid fa-pen-nib absolute -bottom-4 -right-4 text-7xl text-indigo-200/50"></i>
+                    </div>
+                    <!-- ĐGNL -->
+                    <div id="dgnl-card" class="bg-gradient-to-br from-rose-50 to-rose-100 p-6 rounded-3xl border border-rose-200 shadow-sm relative overflow-hidden transform hover:-translate-y-1 transition-all">
+                        <div class="text-[10px] font-black text-rose-400 uppercase tracking-widest mb-1">Xét Điểm ĐGNL</div>
+                        <div id="score-dgnl" class="text-3xl lg:text-4xl font-black text-rose-700 tracking-tighter">0</div>
+                        <div class="text-[10px] text-rose-500 mt-2 font-bold uppercase">Thang: 1200 Điểm</div>
+                        <i class="fa-solid fa-brain absolute -bottom-4 -right-4 text-7xl text-rose-200/50"></i>
+                    </div>
+                    <!-- PT5 -->
+                    <div class="bg-gradient-to-br from-brand-50 to-brand-100 p-6 rounded-3xl border border-brand-200 shadow-sm relative overflow-hidden transform hover:-translate-y-1 transition-all">
+                        <div class="text-[10px] font-black text-brand-400 uppercase tracking-widest mb-1">Hệ PT5 (HCMUT)</div>
+                        <div id="score-pt5" class="text-3xl lg:text-4xl font-black text-brand-700 tracking-tighter">0.0</div>
+                        <div class="text-[10px] text-brand-500 mt-2 font-bold uppercase">Thang: 100 Điểm</div>
+                        <i class="fa-solid fa-graduation-cap absolute -bottom-4 -right-4 text-7xl text-brand-200/50"></i>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="nav(2)" class="bg-slate-900 text-white px-12 py-5 rounded-2xl font-black shadow-xl hover:bg-brand-600 transition-all uppercase tracking-widest text-sm hover:shadow-brand-500/30 hover:-translate-y-1">Chốt Hồ Sơ Hệ Điểm & Phân Tích MBTI <i class="fa-solid fa-arrow-right ml-2 opacity-70"></i></button>
+        </div>
+
+        <!-- STEP 2: MBTI TEST -->
+        <div id="step-2" class="step-section">
+            <h2 class="text-3xl font-extrabold mb-6 flex items-center justify-between text-slate-800 tracking-tight">Bài Test Tính Cách MBTI 
+                <span class="text-brand-600 font-black bg-brand-50 px-4 py-2 rounded-2xl border border-brand-100 uppercase text-sm tracking-widest" id="mbti-prog">0/20</span>
+            </h2>
+
+            <!-- BYPASS MBTI -->
+            <div class="bento-card p-6 mb-8 bg-gradient-to-r from-slate-50 to-white shadow-md border-slate-200">
+                <label class="block font-bold text-slate-800 mb-3 uppercase text-[11px] tracking-widest"><i class="fa-solid fa-wand-magic-sparkles text-amber-500 mr-2"></i>Tính năng rút gọn: Bạn đã biết MBTI của mình chưa?</label>
+                <div class="flex flex-col md:flex-row gap-4 items-center">
+                    <select id="mbti-bypass-select" class="w-full bg-white border border-slate-200 p-4 rounded-xl font-bold text-slate-700 outline-none flex-1 focus:border-brand-500 shadow-sm transition-all text-sm">
+                        <option value="">-- Chưa biết, tôi muốn làm bài test 20 câu để chính xác nhất --</option>
+                        <option value="INTJ">INTJ (Nhà khoa học / Kiến trúc sư)</option>
+                        <option value="INTP">INTP (Nhà tư duy / Nhà logic học)</option>
+                        <option value="ENTJ">ENTJ (Người chỉ huy / Lãnh đạo)</option>
+                        <option value="ENTP">ENTP (Người tranh luận / Khởi xướng)</option>
+                        <option value="INFJ">INFJ (Người che chở / Nhà tư vấn)</option>
+                        <option value="INFP">INFP (Người lý tưởng hóa / Nỗ lực)</option>
+                        <option value="ENFJ">ENFJ (Người cho đi / Chỉ dẫn)</option>
+                        <option value="ENFP">ENFP (Người truyền cảm hứng / Vận động)</option>
+                        <option value="ISTJ">ISTJ (Người trách nhiệm / Hậu cần)</option>
+                        <option value="ISFJ">ISFJ (Người bảo vệ / Nuôi dưỡng)</option>
+                        <option value="ESTJ">ESTJ (Người điều hành / Giám đốc)</option>
+                        <option value="ESFJ">ESFJ (Người quan tâm / Chăm sóc)</option>
+                        <option value="ISTP">ISTP (Nhà kỹ thuật / Nghệ nhân)</option>
+                        <option value="ISFP">ISFP (Nghệ sĩ / Nhà thám hiểm)</option>
+                        <option value="ESTP">ESTP (Người thực thi / Thuyết phục)</option>
+                        <option value="ESFP">ESFP (Người biểu diễn / Trình diễn)</option>
+                    </select>
+                    <button onclick="applyBypass()" class="w-full md:w-auto bg-slate-800 text-white px-8 py-4 rounded-xl font-bold text-xs uppercase tracking-widest hover:bg-slate-700 transition-colors shadow-lg">Áp Dụng Nhanh</button>
+                </div>
+            </div>
+
+            <!-- QUESTIONS BOX -->
+            <div id="mbti-box" class="grid md:grid-cols-2 gap-4 max-h-[60vh] overflow-y-auto pr-2 mb-8 custom-scroll"></div>
+            
+            <div class="flex justify-between items-center bg-white p-4 rounded-2xl shadow-sm border border-slate-100 mt-4 relative z-10">
+                <button onclick="nav(1)" class="text-slate-400 font-bold hover:text-slate-600 transition-all"><i class="fa-solid fa-arrow-left mr-2"></i>Quay lại Sửa Điểm</button>
+                <button onclick="valMBTI()" class="bg-brand-600 text-white px-10 py-3 rounded-xl font-bold shadow-lg hover:bg-brand-500 transition-all uppercase text-sm tracking-widest hover:-translate-y-0.5">Xác nhận Tính Cách</button>
+            </div>
+        </div>
+
+        <!-- STEP 3: RESULT -->
+        <div id="step-3" class="step-section text-center">
+            <h2 class="text-3xl font-extrabold mb-4 text-slate-800 uppercase tracking-tighter">Bộ Lọc Tài Chính & Năng Lực</h2>
+            <div class="bento-card p-8 max-w-xl mx-auto mb-8 border-l-8 border-brand-500 shadow-sm text-left">
+                <label class="block font-bold text-slate-700 mb-4 uppercase text-[10px] tracking-widest">Ngân sách học phí dự kiến / Năm?</label>
+                <select id="budget" class="w-full bg-slate-50 border p-4 rounded-xl font-bold text-slate-800 outline-none focus:border-brand-500 focus:bg-white transition-all">
+                    <option value="low">Dưới 35 Tr (Hệ Công lập)</option>
+                    <option value="mid">35 - 80 Tr (Hệ CLC / Tự chủ)</option>
+                    <option value="high">Trên 80 Tr (Quốc tế / Tư thục)</option>
+                    <option value="all">Tất cả ngân sách</option>
+                </select>
+            </div>
+            <button onclick="analyze()" class="bg-brand-600 text-white px-12 py-5 rounded-2xl font-black shadow-xl uppercase tracking-wider hover:-translate-y-1 hover:shadow-brand-500/40 transition-all">Phân Tích AI 3 Chiều</button>
+        </div>
+
+        <div id="step-loading" class="step-section text-center py-20"><div class="inline-block animate-spin border-4 border-slate-200 border-t-brand-600 rounded-full w-12 h-12 mb-4"></div><h2 class="text-xl font-bold text-slate-600 uppercase tracking-widest">AI Đang Tổng Hợp...</h2></div>
+
+        <div id="step-result" class="step-section">
+            <div class="mb-10 flex flex-col md:flex-row gap-4 justify-between items-start md:items-center bg-white p-6 rounded-3xl shadow-sm border border-slate-100 relative overflow-hidden">
+                <div class="absolute right-0 top-0 w-32 h-32 bg-brand-50 rounded-bl-full -z-10"></div>
+                <div><h2 class="text-2xl font-black text-slate-800 uppercase tracking-tighter mb-1"><i class="fa-solid fa-ranking-star text-brand-500 mr-2"></i>Kết Quả AI Tư Vấn</h2>
+                <p id="final-summary-text" class="text-[11px] text-slate-500 uppercase font-black tracking-widest mt-2 border-l-2 border-brand-400 pl-3">Dựa trên Tổ Hợp <span class="text-brand-600 font-black">A00</span> và Tính cách <span class="text-brand-600 font-black">INTJ</span></p></div>
+                <button onclick="location.reload()" class="bg-slate-100 hover:bg-slate-200 p-3 rounded-xl font-bold text-xs transition-colors"><i class="fa-solid fa-rotate-left mr-2"></i>Tạo hồ sơ mới</button>
+            </div>
+            <div id="result-list" class="space-y-12"></div>
+        </div>
+    </main>
+
+    <!-- LIBRARY VIEW -->
+    <main id="view-library" class="max-w-6xl mx-auto px-4 pt-24 pb-20 hidden">
+        <div class="text-center mb-10"><h1 class="text-4xl font-extrabold mb-2 uppercase tracking-tighter text-slate-900">Bách Khoa Toàn Thư Tuyển Sinh</h1></div>
+        <div class="max-w-xl mx-auto mb-12 relative"><i class="fa-solid fa-search absolute left-5 top-1/2 -translate-y-1/2 text-slate-300"></i><input type="text" id="lib-search" onkeyup="searchLib()" placeholder="Tìm tên trường hoặc ngành học..." class="w-full bg-white border border-slate-200 rounded-3xl py-4 flex-1 px-12 outline-none transition-all focus:border-brand-500 shadow-xl focus:shadow-brand-500/20"></div>
+        <div id="library-grid" class="grid md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+    </main>
+
+    <!-- MODAL -->
+    <div id="major-modal" class="fixed inset-0 z-[100] hidden items-center justify-center p-4 bg-slate-900/90 backdrop-blur-sm transition-opacity">
+        <div class="bg-white rounded-[2.5rem] w-full max-w-4xl max-h-[90vh] flex flex-col shadow-2xl overflow-hidden relative border border-slate-200">
+            <button onclick="closeModal()" class="absolute top-6 right-6 w-10 h-10 bg-slate-50 hover:bg-rose-50 rounded-full flex items-center justify-center text-slate-400 hover:text-rose-500 z-[110] transition-all"><i class="fa-solid fa-xmark text-xl"></i></button>
+            <div class="p-8 border-b bg-brand-50/50">
+                <div class="text-brand-600 font-bold text-[10px] uppercase tracking-widest mb-1" id="m-uni">...</div>
+                <h2 class="text-3xl font-black text-slate-900 mb-3" id="m-name">...</h2>
+                <div class="flex flex-wrap gap-4">
+                    <span class="bg-emerald-100 text-emerald-700 px-4 py-1.5 rounded-lg text-xs font-black italic shadow-sm border border-emerald-200"><i class="fa-solid fa-check-double mr-1 text-[10px]"></i>Độ khớp (Match): <span id="m-fit"></span>%</span>
+                    <span class="bg-indigo-100 text-indigo-700 px-4 py-1.5 rounded-lg text-xs font-black italic shadow-sm border border-indigo-200"><i class="fa-solid fa-bullseye mr-1 text-[10px]"></i>Hệ AI định hướng: <span id="m-method"></span></span>
+                </div>
+            </div>
+            <div class="flex-1 overflow-y-auto p-8 custom-scroll bg-white">
+                <div class="bg-brand-50 p-6 rounded-2xl border border-brand-100 mb-8 shadow-inner relative overflow-hidden">
+                    <div class="absolute right-0 top-0 h-full w-2 bg-brand-400"></div>
+                    <h3 class="font-black mb-2 uppercase text-[11px] text-brand-800 tracking-widest flex items-center gap-2"><i class="fa-solid fa-robot text-brand-500"></i> Tư vấn AI (Năng lực + Tâm lý):</h3>
+                    <p id="m-ai" class="text-slate-800 text-sm leading-relaxed text-justify font-medium mt-3"></p>
+                </div>
+                <div class="grid md:grid-cols-2 gap-4 mb-8 text-center uppercase tracking-tighter">
+                    <div class="bg-sky-50 p-5 rounded-2xl border border-sky-100"><div class="text-[9px] font-black text-sky-400 mb-1 tracking-widest uppercase">Lương Fresher Dự Kiến</div><div class="text-xl font-black text-sky-700" id="m-salary">...</div></div>
+                    <div class="bg-emerald-50 p-5 rounded-2xl border border-emerald-100"><div class="text-[9px] font-black text-emerald-400 mb-1 tracking-widest uppercase">Tỷ lệ việc làm</div><div class="text-xl font-black text-emerald-700" id="m-rate">...</div></div>
+                </div>
+                <div class="border rounded-2xl overflow-hidden mb-8 shadow-sm">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 border-b"><tr><th class="p-4 text-slate-500 uppercase text-[10px]">Học phí</th><th class="text-center w-24 uppercase text-[10px]">2023</th><th class="text-center w-24 uppercase text-[10px]">2024</th><th class="text-center w-24 uppercase text-[10px]">2026</th></tr></thead>
+                        <tbody id="m-f-body-content"></tbody>
+                    </table>
+                </div>
+                <h3 class="font-bold mb-4 uppercase text-[10px] text-slate-400 tracking-widest"><i class="fa-solid fa-briefcase mr-1"></i> Nghề nghiệp tiềm năng:</h3>
+                <div id="m-jobs" class="flex flex-wrap gap-2"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const CAREERS = {
+            TECH: ["AI Engineer", "Software Architect", "Data Scientist", "Fullstack Dev", "Cybersecurity", "Cloud Architect", "Kỹ sư R&D"],
+            BIZ:  ["Brand Manager", "Investment Analyst", "Digital Marketer", "Management Trainee", "Data Analyst", "HRBP", "Kiểm toán viên"],
+            SOC:  ["Giảng viên", "Biên tập viên", "Sáng tạo nội dung", "Tham vấn tâm lý", "Luật sư", "Điều phối dự án", "PR Executive"]
+        };
+
+        const DATA_SOURCE = [
+            { name: "ĐH Bách Khoa TP.HCM (HCMUT)", icon: "fa-robot", website: "https://hcmut.edu.vn", pool: "TECH", pref: "pt5", tuit: [27.5, 30, 35], majors: ["Khoa học Máy tính", "Kỹ thuật Ô tô", "Logistics", "Hóa học", "Xây dựng", "Cơ điện tử"] },
+            { name: "ĐH Kinh Tế TP.HCM (UEH)", icon: "fa-chart-line", website: "https://ueh.edu.vn", pool: "BIZ", pref: "thpt", tuit: [32, 38, 45], majors: ["Kinh doanh Quốc tế", "Marketing", "Tài chính", "Thương mại Điện tử", "Luật Kinh tế", "Tài chính công"] },
+            { name: "ĐH Y Dược TP.HCM (UMP)", icon: "fa-staff-snake", website: "https://ump.edu.vn", pool: "TECH", pref: "thpt", tuit: [70, 77, 85], majors: ["Y Khoa", "Răng Hàm Mặt", "Dược học", "Điều dưỡng", "Y học cổ truyền", "Dinh dưỡng"] },
+            { name: "Đại học RMIT Việt Nam", icon: "fa-globe", website: "https://rmit.edu.vn", pool: "BIZ", pref: "hb", tuit: [318, 335, 355], majors: ["Kinh doanh Quốc tế", "Truyền thông", "Thiết kế Game", "Marketing", "CNTT RMIT", "Thiết kế đồ họa"] },
+            { name: "Đại học Sài Gòn (SGU)", icon: "fa-building", website: "https://sgu.edu.vn", pool: "SOC", pref: "thpt", tuit: [16, 20, 26], majors: ["Sư phạm Toán", "Sư phạm Văn", "Tâm lý học", "Việt Nam học", "Quốc tế học", "Du lịch SGU"] },
+            { name: "ĐH Khoa học Tự nhiên (HCMUS)", icon: "fa-flask", website: "https://hcmus.edu.vn", pool: "TECH", pref: "dgnl", tuit: [24, 30, 40], majors: ["Công nghệ Sinh học", "Khoa học Máy tính", "Trí tuệ nhân tạo", "Vật liệu", "Hóa học"] },
+            { name: "ĐH Công nghệ Thông tin (UIT)", icon: "fa-code", website: "https://uit.edu.vn", pool: "TECH", pref: "dgnl", tuit: [33, 40, 50], majors: ["An toàn Thông tin", "Kỹ thuật Phần mềm", "Khoa học dữ liệu", "Thiết kế Game", "IoT"] }
+        ];
+
+        const UNIVERSITIES = DATA_SOURCE.map(u => ({
+            ...u,
+            fullMajors: u.majors.map((name, i) => {
+                const uniqueSalt = (name.length * 7 + i * 13) % 11;
+                return {
+                    n: name,
+                    t: u.name.includes("Sư phạm") || u.name.includes("SGU") ? [0, 0, 0] : u.tuit.map(val => val + (i * 0.15)),
+                    r: "1/" + Math.floor(10 + uniqueSalt * 5),
+                    j: CAREERS[u.pool] || CAREERS.BIZ,
+                    salary: (u.pool === 'TECH' ? (20 + uniqueSalt) : (15 + uniqueSalt)) + " - " + (35 + uniqueSalt) + " Triệu",
+                    rate: "9" + (2 + uniqueSalt % 6) + "." + (uniqueSalt % 10) + "%"
+                }
+            })
+        }));
+
+        let resultsAdvice = [];
+        let mAns = new Array(20).fill(''); 
+        window.mbtiResult = ""; 
+        window.selectedCombo = "A00";
+        window.liveScores = { hb: 0, thpt: 0, dgnl: 0, pt5: 0, isDGNL: true };
+
+        const ALL_COMBOS = [
+            { id: 'A00', n: 'A00 (Toán, Vật lý, Hóa học)', s: ['Toán', 'Vật lý', 'Hóa học'], focus: ['TECH', 'BIZ'] },
+            { id: 'A01', n: 'A01 (Toán, Vật lý, Tiếng Anh)', s: ['Toán', 'Vật lý', 'Tiếng Anh'], focus: ['TECH', 'BIZ'] },
+            { id: 'A02', n: 'A02 (Toán, Vật lý, Sinh học)', s: ['Toán', 'Vật lý', 'Sinh học'], focus: ['TECH'] },
+            { id: 'B00', n: 'B00 (Toán, Hóa học, Sinh học)', s: ['Toán', 'Hóa học', 'Sinh học'], focus: ['TECH'] },
+            { id: 'B08', n: 'B08 (Toán, Sinh học, Tiếng Anh)', s: ['Toán', 'Sinh học', 'Tiếng Anh'], focus: ['TECH'] },
+            { id: 'C00', n: 'C00 (Ngữ văn, Lịch sử, Địa lý)', s: ['Ngữ văn', 'Lịch sử', 'Địa lý'], focus: ['SOC', 'BIZ'] },
+            { id: 'C01', n: 'C01 (Ngữ văn, Toán, Vật lý)', s: ['Ngữ văn', 'Toán', 'Vật lý'], focus: ['SOC', 'BIZ', 'TECH'] },
+            { id: 'C02', n: 'C02 (Ngữ văn, Toán, Hóa học)', s: ['Ngữ văn', 'Toán', 'Hóa học'], focus: ['SOC', 'TECH'] },
+            { id: 'C14', n: 'C14 (Ngữ văn, Toán, GDCD)', s: ['Ngữ văn', 'Toán', 'GDCD'], focus: ['SOC', 'BIZ'] },
+            { id: 'C20', n: 'C20 (Ngữ văn, Địa lý, GDCD)', s: ['Ngữ văn', 'Địa lý', 'GDCD'], focus: ['SOC'] },
+            { id: 'D01', n: 'D01 (Toán, Ngữ văn, Tiếng Anh)', s: ['Toán', 'Ngữ văn', 'Tiếng Anh'], focus: ['SOC', 'BIZ', 'TECH'] },
+            { id: 'D07', n: 'D07 (Toán, Hóa học, Tiếng Anh)', s: ['Toán', 'Hóa học', 'Tiếng Anh'], focus: ['TECH', 'BIZ'] },
+            { id: 'D08', n: 'D08 (Toán, Sinh học, Tiếng Anh)', s: ['Toán', 'Sinh học', 'Tiếng Anh'], focus: ['TECH'] },
+            { id: 'D14', n: 'D14 (Ngữ văn, Lịch sử, Tiếng Anh)', s: ['Ngữ văn', 'Lịch sử', 'Tiếng Anh'], focus: ['SOC'] },
+            { id: 'D15', n: 'D15 (Ngữ văn, Địa lý, Tiếng Anh)', s: ['Ngữ văn', 'Địa lý', 'Tiếng Anh'], focus: ['SOC'] },
+            { id: 'H00', n: 'H00 (Ngữ văn, Vẽ NT 1, Vẽ NT 2)', s: ['Ngữ văn', 'Vẽ NT 1', 'Vẽ NT 2'], focus: ['SOC'] },
+            { id: 'M00', n: 'M00 (Toán, Ngữ văn, Hát Đọc)', s: ['Toán', 'Ngữ văn', 'Hát/Đọc'], focus: ['SOC'] },
+            { id: 'T00', n: 'T00 (Toán, Sinh học, Năng khiếu Thể thao)', s: ['Toán', 'Sinh', 'Năng khiếu'], focus: ['SOC', 'TECH'] },
+            { id: 'V00', n: 'V00 (Toán, Vật lý, Vẽ Nghệ thuật)', s: ['Toán', 'Vật lý', 'Vẽ thuật'], focus: ['TECH', 'SOC'] },
+            { id: 'V01', n: 'V01 (Toán, Ngữ văn, Vẽ Nghệ thuật)', s: ['Toán', 'Ngữ văn', 'Vẽ thuật'], focus: ['TECH', 'SOC'] }
+        ];
+
+        const mbtiScores = { 
+            'TECH': ['INTJ', 'INTP', 'ENTJ', 'ENTP', 'ISTJ', 'ISTP'],
+            'BIZ':  ['ESTJ', 'ESFJ', 'ENTJ', 'ESTP', 'ENFJ', 'ENFP'],
+            'SOC':  ['INFJ', 'INFP', 'ENFJ', 'ENFP', 'ISFJ', 'ISFP', 'ESFJ', 'ESFP']
+        };
+
+        const MBTI_POLARITY = [
+            {a: 'E', b: 'I'}, {a: 'I', b: 'E'}, {a: 'E', b: 'I'}, {a: 'E', b: 'I'}, {a: 'I', b: 'E'},
+            {a: 'S', b: 'N'}, {a: 'N', b: 'S'}, {a: 'S', b: 'N'}, {a: 'N', b: 'S'}, {a: 'S', b: 'N'},
+            {a: 'T', b: 'F'}, {a: 'F', b: 'T'}, {a: 'T', b: 'F'}, {a: 'F', b: 'T'}, {a: 'T', b: 'F'},
+            {a: 'J', b: 'P'}, {a: 'P', b: 'J'}, {a: 'J', b: 'P'}, {a: 'P', b: 'J'}, {a: 'J', b: 'P'} 
+        ];
+
+        function initApp() {
+            const cSelect = document.getElementById('subject-combo');
+            cSelect.innerHTML = ALL_COMBOS.map(c => `<option value="${c.id}">${c.n}</option>`).join('');
+            initMBTI();
+            updateSubjects();
+        }
+
+        function updateSubjects() {
+            window.selectedCombo = document.getElementById('subject-combo').value;
+            const comboData = ALL_COMBOS.find(c => c.id === window.selectedCombo);
+            
+            document.querySelectorAll('.lbl-t').forEach(el => el.innerText = comboData.s[0]);
+            document.querySelectorAll('.lbl-m1').forEach(el => el.innerText = comboData.s[1]);
+            document.querySelectorAll('.lbl-m2').forEach(el => el.innerText = comboData.s[2]);
+            calcScores();
+        }
+
+        function toggleDGNL(show) {
+            const el = document.getElementById('dgnl-section');
+            const card = document.getElementById('dgnl-card');
+            const inputs = el.querySelectorAll('input');
+            if(show) { 
+                el.style.opacity = '1'; el.style.pointerEvents = 'auto'; el.style.filter = 'grayscale(0)'; inputs.forEach(i => i.disabled = false); 
+                card.style.opacity = '1'; card.style.filter = 'grayscale(0)';
+            } else { 
+                el.style.opacity = '0.5'; el.style.pointerEvents = 'none'; el.style.filter = 'grayscale(1)'; inputs.forEach(i => { i.disabled = true; i.value = ''; }); 
+                card.style.opacity = '0.4'; card.style.filter = 'grayscale(1)'; document.getElementById('score-dgnl').innerText = '0';
+            }
+            calcScores();
+        }
+
+        function calcScores() {
+            const val = (id) => { const v = parseFloat(document.getElementById(id)?.value); return isNaN(v) ? 0 : v; };
+            const isDGNL = document.querySelector('input[name="hasDGNL"]:checked').value === 'yes';
+            
+            // Lấy điểm đầu vào
+            const t10 = val('hb-t10'), m1_10 = val('hb-m1-10'), m2_10 = val('hb-m2-10');
+            const t11 = val('hb-t11'), m1_11 = val('hb-m1-11'), m2_11 = val('hb-m2-11');
+            const t12 = val('hb-t12'), m1_12 = val('hb-m1-12'), m2_12 = val('hb-m2-12');
+            
+            const avg_main = (t10 + t11 + t12) / 3;
+            const avg_m1 = (m1_10 + m1_11 + m1_12) / 3;
+            const avg_m2 = (m2_10 + m2_11 + m2_12) / 3;
+
+            const t_thpt = val('thpt-t'), m1_thpt = val('thpt-m1'), m2_thpt = val('thpt-m2');
+            const gn_nn = val('dgnl-nn'), gn_th = val('dgnl-th'), gn_td = val('dgnl-td');
+            
+            // Xử lý điểm ưu tiên cơ bản
+            const kvMap = {'1': 0.75, '2nt': 0.5, '2': 0.25, '3': 0};
+            const utMap = {'1': 2.0, '2': 1.0, '0': 0};
+            const rawPrio = (kvMap[document.querySelector('input[name="kv"]:checked')?.value || '3'] + utMap[document.querySelector('input[name="ut"]:checked')?.value || '0']);
+            
+            // 1. Hệ Học Bạ Thang 30
+            let hb_score = Math.min(avg_main + avg_m1 + avg_m2 + rawPrio, 30);
+            document.getElementById('score-hb').innerText = (avg_main + avg_m1 + avg_m2) > 0 ? hb_score.toFixed(2) : '0.0';
+
+            // 2. Hệ THPT Thang 30
+            let thpt_score = Math.min(t_thpt + m1_thpt + m2_thpt + rawPrio, 30);
+            document.getElementById('score-thpt').innerText = (t_thpt + m1_thpt + m2_thpt) > 0 ? thpt_score.toFixed(2) : '0.0';
+
+            // 3. Hệ ĐGNL Thang 1200
+            let dgnl_raw = gn_nn + gn_th + gn_td;
+            let dgnl_score = Math.min(dgnl_raw + (rawPrio * 40), 1200); // Quy đổi chuẩn uutien ĐGNL
+            if(isDGNL) document.getElementById('score-dgnl').innerText = dgnl_raw > 0 ? dgnl_score.toFixed(0) : '0';
+
+            // 4. Hệ PT5 Bách Khoa (Thang 100)
+            const v_hb = ((avg_m1 + avg_m2 + avg_main * 2) / 4) * 10;
+            const v_thpt = ((m1_thpt + m2_thpt + t_thpt * 2) / 4) * 10;
+            const v_dgnl = (dgnl_raw / 1200) * 100;
+            let hl = isDGNL ? (v_dgnl * 0.7) + (v_hb * 0.2) + (v_thpt * 0.1) : (v_hb * 0.3) + (v_thpt * 0.7);
+            const achieveBonus = Math.min(val('achieve'), 10); 
+            let pt5_score = Math.min(hl + (rawPrio*(100/30)) + achieveBonus, 100);
+            document.getElementById('score-pt5').innerText = (hl > 0) ? pt5_score.toFixed(1) : '0.0';
+
+            // Save state globally
+            window.liveScores = { hb: hb_score, thpt: thpt_score, dgnl: dgnl_score, pt5: pt5_score, isDGNL: isDGNL };
+        }
+
+        function switchView(v) {
+            document.getElementById('view-advice').style.display = v === 'advice' ? 'block' : 'none';
+            document.getElementById('view-library').style.display = v === 'library' ? 'block' : 'none';
+            document.getElementById('btn-advice').className = `tab-btn px-5 py-2 rounded-lg text-xs font-bold transition-all ${v==='advice'?'active':'text-slate-500'}`;
+            document.getElementById('btn-library').className = `tab-btn px-5 py-2 rounded-lg text-xs font-bold transition-all ${v==='library'?'active':'text-slate-500'}`;
+            if(v==='library') renderLibrary();
+        }
+
+        function nav(s) {
+            document.querySelectorAll('.step-section').forEach(el => el.classList.remove('step-active'));
+            document.getElementById(`step-${s}`).classList.add('step-active');
+            window.scrollTo(0,0);
+        }
+
+        function initMBTI() {
+            const Qs = [
+                { q: "Trong một sự kiện đông người, bạn thường:", a: "Giao tiếp làm quen nhiều người (cả người lạ)", b: "Tập trung vào 1-2 người quen thân" }, 
+                { q: "Sự phân tâm xã hội liên tục khiến bạn:", a: "Bóp nghẹt và cạn kiệt năng lượng", b: "Thấy hào hứng, như được nạp pin" },
+                { q: "Người khác mô tả bạn thế nào?", a: "Nói nhiều, dễ làm quen trò chuyện", b: "Kín đáo, trầm tính và lắng nghe" },
+                { q: "Khi có thông tin chấn động, bạn sẽ:", a: "Tán dóc ngay trên mạng/cho nhóm bạn", b: "Phân tích nội tâm hoặc kệ nó" },
+                { q: "Cuối tuần phục hồi tốt nhất bằng cách:", a: "Chơi game ở nhà, đọc sách, xem phim", b: "Lên bar, ra ngoài đàn đúm tụ tập" },
+                { q: "Khi tiếp nhận công việc mới, điều quan trọng là:", a: "Dữ liệu, số liệu hoặc fact thực tế", b: "Tiềm năng tương lai và bức tranh tổng" },
+                { q: "Trong giải quyết vấn đề, bạn thích:", a: "Sáng tạo cách phá chuẩn, suy nghĩ bay bổng", b: "Đi theo lối mòn có bằng chứng, đúng barem" },
+                { q: "Khi trò chuyện, bạn nói chuyện kiểu:", a: "Trình tự mạch lạc từ A đến Z rõ ràng", b: "Lẩn khuất ý tưởng hàm chứa và ẩn dụ" },
+                { q: "Bạn đánh giá cao tính chất nào của mình:", a: "Đầu óc lãng mạn bay bổng sáng tạo", b: "Kỷ luật, thực tế và bám chặt mặt đất" },
+                { q: "Khi lái xe tới nơi chưa biết:", a: "Đọc kỹ map và nhớ lại đường đã đi", b: "Cứ đi bừa theo trực giác, sai thì sửa" },
+                { q: "Trong các tình huống sinh tử, bạn chốt bằng:", a: "Logic khô khan, quy tắc rạch ròi", b: "Cảm xúc cá nhân bị giằng xé" },
+                { q: "Lúc tranh cãi trong team, bạn ưu tiên:", a: "Dĩ hòa vi quý, không làm mất lòng ai", b: "Chứng minh sự thật, rạch ròi đúng sai" },
+                { q: "Mọi người có chiều hướng tôn trọng bạn vì:", a: "Bản lĩnh, hiệu quả và công minh", b: "Sự ấm áp, hòa đồng và tình cảm" },
+                { q: "Khi đuổi việc nhân sự, bạn thiên về:", a: "Sợ họ bị tổn thương và mềm lòng tha", b: "Làm đúng chỉ tiêu của sếp giao" },
+                { q: "Đối diện với mâu thuẫn gia đình:", a: "Chỉ ra điểm phi logic của mọi người", b: "Chia sẻ cảm xúc để hàn gắn tổn thương" },
+                { q: "Nếu chạy dự án, cách bạn phản ứng là:", a: "Lập Timeline, Checklist ngay lập tức", b: "Vừa làm vừa chill, đợi gần Deadline chạy" },
+                { q: "Sách lược đi du lịch của bạn là:", a: "Ngẫu hứng, cứ đến nơi tùy tính tiếp", b: "Lên plan cụ thể từng giờ, chốt vé trước" },
+                { q: "Đối với lịch trình thay đổi đột ngột:", a: "Thấy rất khó chịu vì vỡ kế hoạch", b: "Thấy bình thường, linh hoạt ứng biến" },
+                { q: "Bàn làm việc của bạn ở nhà:", a: "Lộn xộn ngẫu hứng, mớ bòng bong", b: "Phang đâu ra đấy, dọn gàng vô thức" },
+                { q: "Cách bạn vận hành đời sống là:", a: "Kỷ luật thép, khuôn khổ có chừng mực", b: "Buông thả, lãng tạn, thích thì làm" }
+            ];
+            let h = '';
+            Qs.forEach((q, i) => {
+                h += `<div class="bento-card p-5 shadow-sm border border-slate-100"><p class="font-bold text-[13px] mb-4 text-slate-800"><span class="text-brand-500 mr-1">Q${i+1}.</span> ${q.q}</p><div class="flex flex-col gap-2"><button onclick="setM(${i},'a',this)" class="mbti-btn q-${i} shadow-sm">${q.a}</button><button onclick="setM(${i},'b',this)" class="mbti-btn q-${i} shadow-sm">${q.b}</button></div></div>`;
+            });
+            document.getElementById('mbti-box').innerHTML = h;
+        }
+
+        function setM(i, v, el) {
+            document.querySelectorAll(`.mbti-btn.q-${i}`).forEach(b => b.classList.remove('selected'));
+            el.classList.add('selected'); 
+            mAns[i] = v;
+            document.getElementById('mbti-prog').innerText = `${mAns.filter(x=>x!=='' && x!=='BYPASS').length}/20`;
+        }
+
+        function applyBypass() {
+            const val = document.getElementById('mbti-bypass-select').value;
+            const testBox = document.getElementById('mbti-box');
+            if(val) {
+                window.mbtiResult = val;
+                testBox.style.opacity = '0.3';
+                testBox.style.pointerEvents = 'none';
+                mAns = new Array(20).fill('BYPASS');
+                document.getElementById('mbti-prog').innerText = val;
+            } else {
+                testBox.style.opacity = '1';
+                testBox.style.pointerEvents = 'auto';
+                mAns = new Array(20).fill(''); 
+                document.querySelectorAll('.mbti-btn.selected').forEach(b => b.classList.remove('selected'));
+                document.getElementById('mbti-prog').innerText = '0/20';
+                window.mbtiResult = "";
+            }
+        }
+
+        function valMBTI() {
+            if (mAns.includes('')) return alert("Hãy hoàn thành đủ 20 câu MBTI hoặc Chọn Nhanh bên trên!");
+            
+            if (mAns[0] !== 'BYPASS') {
+                let counts = { E:0, I:0, S:0, N:0, T:0, F:0, J:0, P:0 };
+                mAns.forEach((ans, idx) => {
+                    if (ans === 'BYPASS') return;
+                    const p = MBTI_POLARITY[idx];
+                    if(ans === 'a') counts[p.a]++;
+                    else if(ans === 'b') counts[p.b]++;
+                });
+                window.mbtiResult = (counts.E >= counts.I ? 'E' : 'I') + (counts.S >= counts.N ? 'S' : 'N') + (counts.T >= counts.F ? 'T' : 'F') + (counts.J >= counts.P ? 'J' : 'P');
+            }
+            alert(`Xác nhận thành công! Kết quả MBTI của bạn là: ${window.mbtiResult}`);
+            nav(3); 
+        }
+
+        // Tích hợp AI Analyze đánh giá đa hệ số
+        function analyze() {
+            if(!window.mbtiResult) return alert("Bạn chưa hoàn tất trắc nghiệm MBTI hoặc hệ thống chưa ghi nhận!");
+            nav('loading');
+            
+            document.getElementById('final-summary-text').innerHTML = `Khung định hướng xây dựng dựa trên Tổ Hợp: <span class="text-brand-600 font-black tracking-widest">${window.selectedCombo}</span> | MBTI: <span class="text-brand-600 font-black tracking-widest">${window.mbtiResult}</span>`;
+
+            setTimeout(() => {
+                let recommendations = [];
+                const blockCombo = ALL_COMBOS.find(c => c.id === window.selectedCombo);
+                const blockBonusTypes = blockCombo ? blockCombo.focus : [];
+
+                UNIVERSITIES.forEach((u, ui) => {
+                    let basePercentile = 0;
+                    let mathText = "";
+                    
+                    // Cơ chế Xét Tuyển riêng cho tùy trường
+                    if(u.pref === "pt5") { 
+                        basePercentile = window.liveScores.pt5; 
+                        mathText = "Hệ PT5 ĐHQG"; 
+                    }
+                    else if(u.pref === "dgnl") { 
+                        if(window.liveScores.isDGNL && window.liveScores.dgnl > 100) {
+                            basePercentile = (window.liveScores.dgnl / 1200) * 100;
+                            mathText = "Điểm ĐGNL HCM";
+                        } else {
+                            basePercentile = window.liveScores.thpt * (100/30);
+                            mathText = "Điểm THPT Quy đổi";
+                        }
+                    }
+                    else if(u.pref === "hb") { 
+                        basePercentile = window.liveScores.hb * (100/30); 
+                        mathText = "Xét Học Bạ thuần"; 
+                    }
+                    else { 
+                        basePercentile = window.liveScores.thpt * (100/30); 
+                        mathText = "Xét Điểm THPT"; 
+                    }
+
+                    let baseMatch = basePercentile;
+                    if(blockBonusTypes.includes(u.pool)) baseMatch += 5; // Bonus vì trúng chuyên ngành cốt lõi
+
+                    let mbtiFocusMatched = false;
+                    if(mbtiScores[u.pool] && mbtiScores[u.pool].includes(window.mbtiResult)) { 
+                        baseMatch += 15; mbtiFocusMatched = true; 
+                    } else { baseMatch -= 5; }
+
+                    let matchPercent = Math.min(99, Math.max(10, Math.floor(baseMatch + (Math.random()*2))));
+                    recommendations.push({ ...u, ui_index: ui, match: matchPercent, mbti_fit: mbtiFocusMatched, applyMethod: mathText });
+                });
+
+                recommendations.sort((a,b) => b.match - a.match);
+                resultsAdvice = recommendations.slice(0, 6);
+
+                let h = '';
+                resultsAdvice.forEach((u) => {
+                    const badge = u.mbti_fit ? `<span class="bg-emerald-100 text-emerald-700 px-2 py-0.5 rounded text-[8px] ml-2 tracking-widest"><i class="fa-solid fa-heart mr-1"></i>HỢP TÍNH CÁCH</span>` : '';
+                    h += `<div class="bento-card relative overflow-hidden bg-white mb-8 shadow-sm">
+                        <div class="absolute right-0 top-0 h-full w-2 ${u.mbti_fit ? 'bg-gradient-to-b from-brand-400 to-emerald-400' : 'bg-gradient-to-b from-brand-300 to-brand-100'}"></div>
+                        <div class="p-6">
+                            <div class="flex justify-between items-start mb-6 border-b border-slate-100 pb-4">
+                                <div><h3 class="font-black text-xl text-slate-800 mb-1"><i class="fa-solid ${u.icon} mr-2 text-brand-500"></i>${u.name}</h3>
+                                <div class="text-[10px] uppercase font-black text-slate-400 tracking-widest px-2 py-1 bg-slate-50 inline-block rounded-lg mt-1">${u.pool} / Nhóm Ngành</div>${badge}
+                                </div>
+                                <div class="text-right">
+                                    <div class="text-[11px] font-bold text-slate-400 uppercase tracking-tighter mb-1">Độ tương thích</div>
+                                    <div class="text-3xl font-black text-brand-600">${u.match}<span class="text-lg text-brand-400">%</span></div>
+                                </div>
+                            </div>
+                            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">`;
+                    u.fullMajors.slice(0, 4).forEach((m, mi) => h += `<button onclick="openM('advice', ${resultsAdvice.indexOf(u)}, ${mi})" class="major-item truncate"><i class="fa-solid fa-cube mr-1 opacity-50"></i>${m.n}</button>`);
+                    h += `  </div></div></div>`;
+                });
+                document.getElementById('result-list').innerHTML = h;
+                nav('result');
+            }, 1000);
+        }
+
+        function openM(type, uiIndexInArray, mi) {
+            const arr = type === 'advice' ? resultsAdvice : UNIVERSITIES;
+            const u = arr[uiIndexInArray];
+            const m = u.fullMajors[mi];
+            
+            document.getElementById('m-uni').innerText = u.name;
+            document.getElementById('m-name').innerText = m.n;
+            document.getElementById('m-fit').innerText = u.match || "90";
+            document.getElementById('m-method').innerText = u.applyMethod || "Phức hợp phương thức";
+            document.getElementById('m-salary').innerText = m.salary;
+            document.getElementById('m-rate').innerText = m.rate;
+            
+            const tableContent = document.getElementById('m-f-body-content');
+            if(tableContent) {
+                tableContent.innerHTML = `<tr class="border-b font-bold italic text-slate-600"><td class="p-4 italic text-[11px] text-slate-400">Học phí trung bình</td><td class="text-center font-medium">${m.t[0].toFixed(1)} Tr</td><td class="text-center font-medium">${m.t[1].toFixed(1)} Tr</td><td class="text-center text-brand-600 text-lg font-black bg-brand-50">${m.t[2].toFixed(1)} Tr</td></tr>`;
+            }
+
+            document.getElementById('m-jobs').innerHTML = m.j.map(j => `<span class="text-[10px] font-bold bg-white px-3 py-2 rounded-xl border border-slate-200 text-slate-700 shadow-sm">${j}</span>`).join('');
+            
+            let aiText = `Dựa trên phân tích năng lực phương thức <strong>${u.applyMethod || 'tổng hợp'}</strong> của bạn, bạn lọt TOP lợi thế đỗ vào khoa ${m.n} của trường. `;
+            if(u.mbti_fit) { aiText += `<br><br><span class="text-emerald-700 opacity-90"><i class="fa-solid fa-leaf mr-1"></i>Đồng thời, kiểu tính cách <strong class="tracking-widest">` + window.mbtiResult + `</strong> của bạn sinh ra là dành cho lộ trình thăng tiến và môi trường làm việc của khối ${u.pool} này, tỷ lệ bỏ ngang giữa chừng sẽ cực kỳ thấp.</span>`; } 
+            else if (window.mbtiResult) { aiText += `<br><br><span class="text-amber-600 opacity-90"><i class="fa-solid fa-triangle-exclamation mr-1"></i>Tuy nhiên, vì tính cách <strong class="tracking-widest">` + window.mbtiResult + `</strong>, bạn có thể đối mặt vòng lặp áp lực trong mô hình tư duy của ngành. Có lẽ bạn cần làm quen trước môi trường thực tế.</span>`; } 
+            document.getElementById('m-ai').innerHTML = aiText;
+
+            const modal = document.getElementById('major-modal');
+            modal.style.display = 'flex';
+            setTimeout(() => modal.style.opacity = '1', 10);
+            document.body.style.overflow = 'hidden';
+        }
+
+        function renderLibrary() {
+            let h = '';
+            UNIVERSITIES.forEach((u, ui) => {
+                h += `<div class="bento-card p-6 library-card" data-name="${u.name}"><h3 class="font-black text-[15px] mb-5 text-slate-800"><i class="fa-solid ${u.icon} mr-2 text-brand-600"></i>${u.name}</h3><div id="box-majors-${ui}" class="grid grid-cols-2 gap-2 mb-5">${u.fullMajors.slice(0, 6).map((m, mi) => `<button onclick="openM('lib', ${ui}, ${mi})" class="major-item truncate">${m.n}</button>`).join('')}</div><div class="mt-auto flex gap-2"><button id="btn-toggle-${ui}" onclick="toggleM(${ui})" class="flex-1 bg-brand-50 text-brand-700 py-2.5 rounded-xl text-[10px] font-black uppercase tracking-widest hover:bg-brand-100 transition-colors">Xem thêm +</button></div></div>`;
+            });
+            document.getElementById('library-grid').innerHTML = h;
+        }
+
+        function toggleM(ui) {
+            const box = document.getElementById(`box-majors-${ui}`);
+            const btn = document.getElementById(`btn-toggle-${ui}`);
+            if(btn.innerText.includes('XEM THÊM')) { box.innerHTML = UNIVERSITIES[ui].fullMajors.map((m, mi) => `<button onclick="openM('lib', ${ui}, ${mi})" class="major-item truncate">${m.n}</button>`).join(''); btn.innerText = "Thu gọn -"; } 
+            else { box.innerHTML = UNIVERSITIES[ui].fullMajors.slice(0, 6).map((m, mi) => `<button onclick="openM('lib', ${ui}, ${mi})" class="major-item truncate">${m.n}</button>`).join(''); btn.innerText = "Xem thêm +"; }
+        }
+
+        function closeModal() { const modal = document.getElementById('major-modal'); modal.style.opacity = '0'; setTimeout(() => { modal.style.display = 'none'; document.body.style.overflow = 'auto'; }, 300); }
+        function searchLib() { let q = document.getElementById('lib-search').value.toLowerCase(); document.querySelectorAll('.library-card').forEach(el => { el.style.display = (el.getAttribute('data-name').toLowerCase().includes(q) || el.innerText.toLowerCase().includes(q)) ? 'block' : 'none'; }); }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>
